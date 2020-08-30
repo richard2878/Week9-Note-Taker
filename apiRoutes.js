@@ -1,21 +1,30 @@
-//require fs package
-const fs = require("fs");
-const data  = require("../db/db.json");
+  
+var fs = require("fs");
+var notesData = getNotes();
 
-//exporting to Heroku?
-module.exports = function(app) {
+function getNotes() {
+    let data = fs.readFileSync('./db/db.json', 'utf8');
+
+    let notes = JSON.parse(data);
+
+    // Give each note an ID that matches its index (this gets run for every time the page is refreshed)
+    for (let i = 0; i < notes.length; i++) {
+        notes[i].id = '' + i;
+    }
+
+    return notes;
+}
+
+module.exports = function (app) {
     //Get API notes
-    app.get("/api/notes", function(req, res) {
-        return res.json(data);
-    })
-    //Post API notes
+    app.get("/api/notes", function (req, res) {
+        notesData = getNotes();
+        res.json(notesData);
+    });
+    //Create API notes
     app.post("/api/notes", function (req, res) {
-        console.log("Post Successful!")
-        //ID assigned
-        req.body.id = data.length + 1;
-        //push dbJason
         notesData.push(req.body);
-        fs.writeFileSync("./db/db.json", JSON.stringify(data), 'utf8');
+        fs.writeFileSync('./db/db.json', JSON.stringify(notesData), 'utf8');
         res.json(true);
     });
     //Delete API notes
@@ -23,17 +32,16 @@ module.exports = function(app) {
         const requestID = req.params.id;
         console.log(requestID);
 
-        let note = data.filter(note => {
+        let note = notesData.filter(note => {
             return note.id === requestID;
         })[0];
 
         console.log(note);
-        const index = data.indexOf(note);
+        const index = notesData.indexOf(note);
 
-        data.splice(index, 1);
+        notesData.splice(index, 1);
 
-        fs.writeFileSync('./db/db.json', JSON.stringify(data), 'utf8');
+        fs.writeFileSync('./db/db.json', JSON.stringify(notesData), 'utf8');
         res.json("Note deleted");
     });
-
-}
+};

@@ -1,7 +1,6 @@
 // Dependencies
 // =============================================================
 var express = require("express");
-var path = require("path");
 
 // Sets up the Express App
 // =============================================================
@@ -16,7 +15,8 @@ app.use(express.json());
 app.use(express.static('public'));
 
 //require files
-require('./')
+require("./apiRoutes")(app);
+require("./htmlRoutes")(app);
 
 // Starts the server to begin listening
 // =============================================================
