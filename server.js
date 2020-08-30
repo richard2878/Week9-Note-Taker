@@ -15,6 +15,8 @@ app.use(express.json());
 //Servers static files to public folder
 app.use(express.static('public'));
 
+//require files
+require('./')
 
 // Starts the server to begin listening
 // =============================================================
